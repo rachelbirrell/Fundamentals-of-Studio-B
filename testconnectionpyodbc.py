@@ -28,6 +28,52 @@ cnxn.maxwrite = 1024 * 1024 * 1024
 cnxn.setdecoding(pyodbc.SQL_WCHAR, encoding='utf-8')
 cnxn.setencoding(encoding='utf-8')
 
+# enabling commit means that all work will be kept even if the connection
+# object is closed
+cnxn.commit()
 
-# Create a cursor from the connection
+
+################################################################################
+# create table - CUSTOMER INFO
+
+# cursor = cnxn.cursor()
+# create_table = "CREATE TABLE Customer_Info(ref_id int, cust_name varchar);"
+# cursor.execute(create_table)
+# cnxn.commit()
+
+
+################################################################################
+# create table - MENU
+
+menu_subtitles = input("Please enter the different categories in the menu, "
+	"each seperate by a comma this will create a database for each of the "
+	"categories.")
+
+# menu subtitles in a string of words seperated by a comma, make this into a list
+subtitles = menu_subtitles.split(",")
+
 cursor = cnxn.cursor()
+create_table = "CREATE TABLE Menu(ref_id int)"
+cursor.execute(create_table)
+cnxn.commit()
+
+
+cursor = cnxn.cursor()
+for i in range(len(subtitles)):
+	subtitle = subtitles[i]
+	"ALTER TABLE Menu ADD %s varchar" %subtitle
+	cursor.execute(create_table)
+
+cnxn.commit()
+
+
+################################################################################
+# if new customer and they would like to set up an account
+
+# full_name = "Rachel_Birrell"
+
+# cursor = cnxn.cursor()
+# insert_customer = "INSERT INTO Customer_Info(ref_id, cust_name) VALUES(1, %s)" %full_name
+# cursor.execute(insert_customer)
+# cnxn.commit()
+
