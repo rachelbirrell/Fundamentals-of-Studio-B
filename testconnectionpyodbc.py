@@ -18,8 +18,6 @@ conn_str = (
 # Specifying the ODBC driver, server name, database, etc. directly
 cnxn = pyodbc.connect(conn_str)
 
-print('connection successful')
-
 # Driver naturally defaults to 255-byte maximum varchar size for writes
 # which is very slow. Hence setting it to something bigger.
 cnxn.maxwrite = 1024 * 1024 * 1024
@@ -45,35 +43,68 @@ cnxn.commit()
 ################################################################################
 # create table - MENU
 
-menu_subtitles = input("Please enter the different categories in the menu, "
-	"each seperate by a comma this will create a database for each of the "
-	"categories.")
+# menu_subtitles = input("Please enter the different categories in the menu, "
+# 	"each seperate by a comma this will create a database for each of the "
+# 	"categories> ")
 
-# menu subtitles in a string of words seperated by a comma, make this into a list
-subtitles = menu_subtitles.split(",")
+# # menu subtitles in a string of words seperated by a comma, make this into a list
+# subtitles = menu_subtitles.split(",")
 
-cursor = cnxn.cursor()
-create_table = "CREATE TABLE Menu(ref_id int)"
-cursor.execute(create_table)
-cnxn.commit()
+# cursor = cnxn.cursor()
+# create_table = "CREATE TABLE Menu(ref_id int)"
+# cursor.execute(create_table)
+# cnxn.commit()
 
 
-cursor = cnxn.cursor()
-for i in range(len(subtitles)):
-	subtitle = subtitles[i]
-	"ALTER TABLE Menu ADD %s varchar" %subtitle
-	cursor.execute(create_table)
+# cursor = cnxn.cursor()
+# for i in range(len(subtitles)):
+# 	subtitle = subtitles[i]
+# 	"ALTER TABLE Menu ADD %s varchar" %subtitle
+# 	cursor.execute(create_table)
 
-cnxn.commit()
+# cnxn.commit()
 
 
 ################################################################################
 # if new customer and they would like to set up an account
 
-# full_name = "Rachel_Birrell"
+name = "Rachel Birrell"
+ref_num = 1
 
-# cursor = cnxn.cursor()
-# insert_customer = "INSERT INTO Customer_Info(ref_id, cust_name) VALUES(1, %s)" %full_name
-# cursor.execute(insert_customer)
-# cnxn.commit()
+cursor = cnxn.cursor()
+cursor.execute(""" 
+	INSERT INTO Customer_Info(ref_id, cust_name)
+	VALUES (?, ?)
+	""", (ref_num, name))
 
+cnxn.commit()
+
+
+################################################################################
+# Print the table from the database
+
+cursor = cnxn.cursor()
+
+print("This is the data contained within the Customer Info table:")
+
+cursor.execute(""" 
+	SELECT * 
+	FROM Customer_Info
+	""")
+
+rows = cursor.fetchall()
+for row in rows:
+	print(row.ref_id, row.cust_name)
+
+cnxn.commit()
+
+
+
+# print("fetchall:")
+# result = cursor.fetchall() 
+# for r in result:
+#     print(r)
+# cursor.execute("SELECT * FROM employee") 
+# print("\nfetch one:")
+# res = cursor.fetchone() 
+# print(res)
