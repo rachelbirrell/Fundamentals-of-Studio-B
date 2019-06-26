@@ -1,19 +1,37 @@
 from databasefunctions import *
 
-cnxn = connecting_to_postgresql()
+database_name = "StudioTest"
+password = "password"
+port = 5432
 
-# only run once
-# create_customer_table(cnxn)
 
-# only run once
-# create_menu_table(cnxn)
+cnxn = connecting_to_postgresql(database_name, password, port)
 
-Customer_Info = "Customer_Info"
-name = "John"
-photo = "B"
 
-get_latest_ref_id(cnxn, Customer_Info)
+#print(get_latest_previous_order_num(cnxn, "Rachel"))
 
-create_new_customer(cnxn, Customer_Info, name, photo)
+retrieve_images(cnxn)
 
-print_table(cnxn, Customer_Info)
+
+#Customer_Info = "Customer_Info"
+#name = "John"
+#photo = "B"
+#filename = "john_profile.jpg"
+
+#get_latest_ref_id(cnxn, Customer_Info)
+
+#create_new_customer(cnxn, Customer_Info, name, photo)
+
+
+#add_customer_image(filename)
+
+# delete_data(cnxn)
+# print_table(cnxn, "Customer_Info")
+
+# add_image(cnxn, 'Nick', 'john_profile.jpg')
+
+# retrieve_images(cnxn)
+
+# read_cust_image(cnxn, 'Ray')
+
+#verify_image(cnxn, 'john_profile.jpg')
