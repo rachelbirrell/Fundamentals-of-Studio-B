@@ -114,16 +114,24 @@ def add_items_to_menu(cnxn):
 ################################################################################
 # if face recognition doesn't work, create new customer
 
-def create_new_customer(cnxn, database, name, photo):
+def create_new_customer(cnxn, name, path_to_file, order_list):
 
-	ref_num = get_latest_ref_id(cnxn, database) + 1
+	# ref_num = get_latest_ref_id(cnxn, database) + 1
 	date = datetime.today().strftime('%Y-%m-%d')
+
+	comma = ","
+	order_string = comma.join(order_list)
+
+	file = open(path_to_file, 'rb')
+	img_content = file.read()
+	img_to_b64 = base64.b64encode(bytes(img_content))
+	file.close()
 
 	cursor = cnxn.cursor()
 	cursor.execute(""" 
-		INSERT INTO Customer_Info(ref_id, cust_name, photo, date_last_visit)
+		INSERT INTO Customer_Info(cust_name, photo, previous_order1, date_last_visit)
 		VALUES (?, ?, ?, ?)
-		""", (ref_num, name, photo, date))
+		""", (name, img_to_b64, order_string, date))
 
 	cnxn.commit()
 
@@ -191,38 +199,23 @@ def add_image(cnxn, name, path_to_file):
 
 def retrieve_images(cnxn):
 
-	i = 0
-
 	cursor = cnxn.cursor()
+
 	cursor.execute("""
-			SELECT photo 
+			SELECT ref_id, photo
 			FROM Customer_Info 
 			""")
 	rows = cursor.fetchall()
 
-	while i <= len(rows):
-
-		database_img = base64.b64decode(rows[i].photo)
-
-		outfile = '%s.jpg' %("test" + str(i))
-
+	for row in rows:
+		database_img = base64.b64decode(row.photo)
+		outfile = '%s.jpg' %("photo" + str(row.ref_id))
 		f = open(outfile, 'wb')
 		f.write(database_img)
 		f.close
 
+	cnxn.commit()
 
-
-
-
-	# for row in rows:
-	# 	database_img = base64.b64decode(row.photo)
-
-
-	# 	outfile = '%s.jpg' %(file_basename + str(random.randint(1, 200)))
-
-	# 	f = open(outfile, 'wb')
-	# 	f.write(database_img)
-	# 	f.close
 
 
 ################################################################################
@@ -233,9 +226,9 @@ def delete_data(cnxn):
 	cursor = cnxn.cursor()
 	cursor.execute("""
 			DELETE FROM Customer_Info
-			WHERE photo is null 
 			""")		
 	cnxn.commit()
+
 
 
 ################################################################################
